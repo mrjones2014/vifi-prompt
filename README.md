@@ -7,6 +7,8 @@ primarily focused around showing proper indicators when using Vi key bindings.
 
 ## Install
 
+Requires a [NerdFont](https://github.com/ryanoasis/nerd-fonts).
+
 ```
 cargo install vifi-prompt
 ```
