@@ -1,0 +1,18 @@
+[package]
+name = "vifi-prompt"
+description = "A super simple prompt for Fish shell with Vi mode indicator"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+documentation = "https://github.com/mrjones2014/vifi-prompt/blob/master/README.md"
+homepage = "https://github.com/mrjones2014/vifi-prompt#readme"
+repository = "https://github.com/mrjones2014/vifi-prompt"
+
+[[bin]]
+name = "vifi"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "3", features = ["derive"] }
+dirs-next = "2.0.0"
+ansi_term = "0.12.1"
