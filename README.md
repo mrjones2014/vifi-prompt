@@ -10,3 +10,8 @@ primarily focused around showing proper indicators when using Vi key bindings.
 ```
 cargo install vifi-prompt
 ```
+
+## Notes
+
+This is just something I made for myself. I'm not going to take feature requests,
+but will accept well-written PRs.
