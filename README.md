@@ -13,6 +13,12 @@ Requires a [NerdFont](https://github.com/ryanoasis/nerd-fonts).
 cargo install vifi-prompt
 ```
 
+Then add this line to your `config.fish`:
+
+```fish
+vifi init | source
+```
+
 ## Notes
 
 This is just something I made for myself. I'm not going to take feature requests,
