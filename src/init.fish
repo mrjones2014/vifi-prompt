@@ -10,7 +10,7 @@ function fish_prompt
 end
 
 function fish_right_prompt
-    vifi right-prompt --last-duration $CMD_DURATION --last-command (history -n 1)
+    vifi right-prompt --last-duration $CMD_DURATION --last-command "$(history -n 1)"
 end
 
 # Remove default mode prompt
