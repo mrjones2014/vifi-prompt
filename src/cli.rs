@@ -26,6 +26,7 @@ pub enum Cmds {
     Init(InitArgs),
     #[clap(about = "Print the prompt")]
     Prompt(PromptArgs),
+    #[clap(about = "Print the right side prompt")]
     RightPrompt(RightPromptArgs),
 }
 
