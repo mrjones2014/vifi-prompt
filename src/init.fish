@@ -9,5 +9,9 @@ function fish_prompt
     vifi prompt --status $status --vi-mode $vi_mode
 end
 
+function fish_right_prompt
+    vifi right-prompt --last-duration $CMD_DURATION
+end
+
 # Remove default mode prompt
 builtin functions -e fish_mode_prompt

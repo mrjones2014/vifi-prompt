@@ -9,6 +9,14 @@ pub struct PromptArgs {
 }
 
 #[derive(Debug, Args)]
+pub struct RightPromptArgs {
+    #[clap(long)]
+    pub last_duration: u64,
+    #[clap(long)]
+    pub last_command: String,
+}
+
+#[derive(Debug, Args)]
 pub struct InitArgs {}
 
 #[derive(Debug, Subcommand)]
@@ -18,6 +26,7 @@ pub enum Cmds {
     Init(InitArgs),
     #[clap(about = "Print the prompt")]
     Prompt(PromptArgs),
+    RightPrompt(RightPromptArgs),
 }
 
 #[derive(Debug, Parser)]

@@ -2,6 +2,7 @@ use crate::context::{Context, ViMode};
 use ansi_term::Color;
 use clap::Parser;
 use cli::{Cmds, VifiArgs};
+use std::time::Duration;
 
 mod cli;
 mod context;
@@ -11,6 +12,39 @@ fn main() {
     let args = VifiArgs::parse();
     match args.cmd {
         Cmds::Init(_) => println!("{}", include_str!("./init.fish")),
+        Cmds::RightPrompt(args) => {
+            let last_cmd = args.last_command.trim();
+            if args.last_duration < 29
+                || last_cmd.starts_with("vim")
+                || last_cmd.starts_with("nvim")
+                || last_cmd.starts_with("hx")
+            {
+                return;
+            }
+
+            let duration = Duration::from_millis(args.last_duration);
+            let seconds = duration.as_secs() % 60;
+            let minutes = (duration.as_secs() / 60) % 60;
+            let hours = (duration.as_secs() / 60) / 60;
+
+            let mut duration_str = "".into();
+            if hours > 0 {
+                duration_str = format!("{}h ", hours);
+            }
+
+            if minutes > 0 {
+                duration_str = format!("{}m ", minutes);
+            }
+
+            if seconds > 0 {
+                duration_str = format!("{}s", seconds);
+            }
+
+            if !duration_str.is_empty() {
+                duration_str = format!(" {}", duration_str);
+                println!("{}", Color::RGB(88, 96, 104).paint(duration_str));
+            }
+        }
         Cmds::Prompt(args) => {
             let context = Context::init(args);
             let vi_symbol = match context.vi_mode {
