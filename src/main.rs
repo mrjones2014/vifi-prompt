@@ -1,5 +1,5 @@
 use crate::context::{Context, ViMode};
-use ansi_term::{Color, Style};
+use ansi_term::Color;
 use clap::Parser;
 use cli::{Cmds, VifiArgs};
 
@@ -21,48 +21,48 @@ fn main() {
                 ViMode::Visual => "🆅 ",
             };
 
-            let mut git_str = if let Some(branch) = context.git_branch {
+            let git_str = if let Some(branch) = context.git_branch {
                 format!("  {}", branch)
             } else {
                 "".into()
             };
 
+            let mut git_symbols = "".into();
             if let Some(status) = context.git_status {
-                let mut symbols = "".into();
-
                 if status.ahead {
-                    symbols = format!("{}", symbols);
+                    git_symbols = format!("{}⇡", git_symbols);
                 }
 
                 if status.behind {
-                    symbols = format!("{}", symbols);
-                }
-
-                if status.modified {
-                    symbols = format!("{}", symbols);
-                }
-
-                if status.added {
-                    symbols = format!("{}", symbols);
-                }
-
-                if status.deleted {
-                    symbols = format!("{}", symbols);
+                    git_symbols = format!("{}⇣", git_symbols);
                 }
 
                 if status.untracked {
-                    symbols = format!("{}", symbols);
+                    git_symbols = format!("{}?", git_symbols);
                 }
 
-                if !symbols.is_empty() {
-                    git_str = format!("{} [{}]", git_str, symbols);
+                if status.modified {
+                    git_symbols = format!("{}!", git_symbols);
+                }
+
+                if status.added {
+                    git_symbols = format!("{}+", git_symbols);
+                }
+
+                if status.deleted {
+                    git_symbols = format!("{}✘", git_symbols);
                 }
             }
 
+            if !git_symbols.is_empty() {
+                git_symbols = format!(" [{}]", git_symbols);
+            }
+
             let mut prompt = format!(
-                "\n {}{}",
-                Color::Cyan.paint(context.work_dir),
-                Color::RGB(247, 78, 39).paint(git_str)
+                "\n {}{}{}",
+                Color::Cyan.bold().paint(context.work_dir),
+                Color::RGB(247, 78, 39).bold().paint(git_str),
+                Color::RGB(247, 78, 39).paint(git_symbols)
             );
 
             if !prompt.ends_with('\n') {
@@ -82,8 +82,8 @@ fn main() {
                 ViMode::Visual => Color::RGB(249, 249, 5),
             };
 
-            prompt = format!("{} {} ", prompt, vi_symbol_color.paint(vi_symbol));
-            print!("{}", Style::new().bold().paint(prompt));
+            prompt = format!("{} {} ", prompt, vi_symbol_color.bold().paint(vi_symbol));
+            print!("{}", prompt);
         }
     }
 }
