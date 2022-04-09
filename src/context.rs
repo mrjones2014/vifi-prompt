@@ -1,5 +1,5 @@
 use crate::{cli::PromptArgs, traits::NoneIfEmpty};
-use std::{env, process::Command};
+use std::{env, path::Path, process::Command};
 
 pub enum ViMode {
     Normal,
@@ -121,23 +121,34 @@ impl Context {
         let git_status = get_git_status();
 
         let current_dir = env::current_dir()
-            .map(|p| {
-                if git_branch.is_some() {
-                    p.iter()
-                        .last()
-                        .map(|s| s.to_str())
-                        .flatten()
-                        .unwrap_or("[unknown]")
-                        .to_string()
-                } else {
-                    p.to_str().unwrap_or("[unknown]").to_string()
-                }
-            })
+            .map(|p| p.to_str().unwrap_or("[unknown]").to_string())
             .unwrap_or_else(|_| "[unknown]".into());
         let home_dir = dirs_next::home_dir().map(|p| p.to_str().unwrap_or("[unknown]").to_string());
-        let work_dir = home_dir
+        let mut work_dir = home_dir
             .map(|home| current_dir.replacen(home.as_str(), "~", 1))
             .unwrap_or_else(|| "[unknown]".into());
+
+        if git_branch.is_some() {
+            let toplevel = Command::new("git")
+                .args(["rev-parse", "--show-toplevel"])
+                .output()
+                .map(|op| {
+                    String::from_utf8(op.stdout)
+                        .ok()
+                        .map(|s| s.trim().replace("\r\n", "").replace("\n", ""))
+                })
+                .ok()
+                .flatten()
+                .none_if_empty();
+            if let Some(toplevel) = toplevel {
+                work_dir = Path::new(&toplevel)
+                    .iter()
+                    .last()
+                    .map(|s| s.to_str().unwrap_or("[unknown]"))
+                    .unwrap_or("[unknown]")
+                    .to_string();
+            }
+        }
 
         Context {
             work_dir,
