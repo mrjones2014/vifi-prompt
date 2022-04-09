@@ -123,10 +123,10 @@ impl Context {
         let current_dir = env::current_dir()
             .map(|p| p.to_str().unwrap_or("[unknown]").to_string())
             .unwrap_or_else(|_| "[unknown]".into());
-        let home_dir = dirs_next::home_dir().map(|p| p.to_str().unwrap_or("[unknown]").to_string());
-        let mut work_dir = home_dir
-            .map(|home| current_dir.replacen(home.as_str(), "~", 1))
-            .unwrap_or_else(|| "[unknown]".into());
+        let home_dir = dirs_next::home_dir()
+            .map(|p| p.to_str().unwrap_or("[unknown]").to_string())
+            .unwrap_or_else(|| "[unknown]".to_string());
+        let mut work_dir = current_dir.replacen(home_dir.as_str(), "~", 1);
 
         if git_branch.is_some() {
             let toplevel = Command::new("git")
@@ -141,12 +141,17 @@ impl Context {
                 .flatten()
                 .none_if_empty();
             if let Some(toplevel) = toplevel {
-                work_dir = Path::new(&toplevel)
+                let git_root_path = Path::new(&toplevel);
+                let repo_name = <&std::path::Path>::clone(&git_root_path)
                     .iter()
                     .last()
                     .map(|s| s.to_str().unwrap_or("[unknown]"))
-                    .unwrap_or("[unknown]")
-                    .to_string();
+                    .unwrap_or("[unknown]");
+                work_dir = current_dir.replacen(
+                    git_root_path.to_str().unwrap_or("[unknown]"),
+                    repo_name,
+                    1,
+                );
             }
         }
 
