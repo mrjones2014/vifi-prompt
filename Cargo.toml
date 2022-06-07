@@ -1,7 +1,7 @@
 [package]
 name = "vifi-prompt"
 description = "A super simple prompt for Fish shell with Vi mode indicator"
-version = "0.2.7"
+version = "0.2.8"
 edition = "2021"
 license = "MIT"
 documentation = "https://github.com/mrjones2014/vifi-prompt/blob/master/README.md"
