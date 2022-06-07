@@ -4,14 +4,6 @@ pub trait NoneIfEmpty {
 
 impl NoneIfEmpty for Option<String> {
     fn none_if_empty(&self) -> Option<String> {
-        if let Some(val) = self {
-            if val.is_empty() {
-                None
-            } else {
-                Some(val.to_string())
-            }
-        } else {
-            None
-        }
+        self.clone().filter(|val| !val.is_empty())
     }
 }
