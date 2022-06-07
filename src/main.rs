@@ -2,7 +2,7 @@ use crate::context::{Context, ViMode};
 use ansi_term::Color;
 use clap::Parser;
 use cli::{Cmds, VifiArgs};
-use std::time::Duration;
+use std::{env, time::Duration};
 
 mod cli;
 mod context;
@@ -13,32 +13,32 @@ fn main() {
     match args.cmd {
         Cmds::Init(_) => println!("{}", include_str!("./init.fish")),
         Cmds::RightPrompt(args) => {
-            let last_cmd = args.last_command.trim();
-            if args.last_duration < 29
+            let last_cmd = args.last_command.trim().to_lowercase();
+            let last_cmd_is_editor = env::var("EDITOR")
+                .map(|editor| last_cmd.starts_with(&editor.to_lowercase()))
+                .unwrap_or(false);
+            // only show time if greater than 3s
+            // or if last command was not a text editor
+            if args.last_duration < 2999
                 || last_cmd.starts_with("vim")
                 || last_cmd.starts_with("nvim")
                 || last_cmd.starts_with("hx")
+                || last_cmd.starts_with("emacs")
+                || last_cmd_is_editor
             {
                 return;
             }
 
-            let duration = Duration::from_millis(args.last_duration);
-            let seconds = duration.as_secs() % 60;
-            let minutes = (duration.as_secs() / 60) % 60;
-            let hours = (duration.as_secs() / 60) / 60;
+            let duration = Duration::from_millis(args.last_duration).as_secs();
+            let (h, s) = (duration / 3600, duration % 3600);
+            let (m, s) = (s / 60, s % 60);
 
-            let mut duration_str = "".into();
-            if hours > 0 {
-                duration_str = format!("{}h ", hours);
-            }
+            let mut units: Vec<String> = vec![];
+            (h > 0).then(|| units.push(format!("{}h", h)));
+            (m > 0).then(|| units.push(format!("{}m", m)));
+            (s > 0).then(|| units.push(format!("{}s", s)));
 
-            if minutes > 0 {
-                duration_str = format!("{}m ", minutes);
-            }
-
-            if seconds > 0 {
-                duration_str = format!("{}s", seconds);
-            }
+            let mut duration_str = units.join(" ");
 
             if !duration_str.is_empty() {
                 duration_str = format!(" {}", duration_str);
