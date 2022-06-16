@@ -1,3 +1,5 @@
+> :warning: **I've switched back to [Starship](https://github.com/starship/starship) since my PR to fix vi mode detection for Fish shell released.**
+
 # vifi-prompt
 
 `vifi` is a portmandeau of 'Vi' and 'Fish', because it's a prompt for Fish shell,
